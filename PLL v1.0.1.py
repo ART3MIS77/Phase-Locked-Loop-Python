@@ -20,9 +20,6 @@ Ki = 0.05
 k0 = 1
 integral = 0
 
-
-#output_signal = sine_ref_n
-
 def pi_controller(kp, ki, integral, error, time):
   integral += error * dt
   P = kp * error
@@ -32,9 +29,7 @@ def pi_controller(kp, ki, integral, error, time):
   return pi,integral
 
 sine_ref_n = sine_ref + noise
-#sine_vco_n = signal_vco + noise
 square_ref = sine_ref_n >= 0                               # sine -> square wave
-#square_vco = sine_vco >= 0
 
 
 phase_detector = []
@@ -55,14 +50,12 @@ for i in range(len(t)):
   phase_detect = square_vco[i] != square_ref[i]
   phase_detector.append(phase_detect)
 
-  #phase_error = np.angle(np.exp(1j * (phase_ref[i] - phase_vco_arr[i])))
   phase_error = phase_ref[i] - phase_vco
 
   pi_val, integral = pi_controller(Kp, Ki, integral, phase_error, dt)
   pi_result.append(pi_val)
   ref_out[i] = sine_ref_n[i] - pi_val
 
-  #phase_error = np.angle(np.exp(1j * (phase_ref[i] - phase_vco)))
   current_vco = f0 + k0 * pi_val
 
   phase_vco += 2 * np.pi * vco * dt
@@ -76,9 +69,6 @@ for i in range(len(t)):
 
 
 plt.figure()
-#plt.plot(t, sine_vco)
-#plt.plot(t, sine_ref_n)
-#plt.plot(t, phase_detect)
 fig, axs = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
 
 axs[0].plot(t, sine_ref_n, label='Reference (noisy)')
@@ -91,8 +81,6 @@ axs[1].plot(t, phase_detector, label='Phase Detector Output', color='orange')
 axs[1].set_ylabel('Phase Error (bool)')
 axs[1].legend()
 
-#plt.tight_layout()
-#plt.show()
 axs[2].plot(t, ref_out, label='Reference (clean)', linestyle='--', alpha=0.6)
 axs[2].set_ylabel('Amplitude')
 axs[2].legend()
